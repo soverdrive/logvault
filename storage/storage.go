@@ -2,6 +2,6 @@ package storage
 
 // Storage interface
 type Storage interface {
-	WriteLog(prefix string, content string) error
+	WriteLog(prefix string, hostname, content string) error
 	Close() error
 }

@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -50,7 +51,7 @@ func (flog *FileLog) createNewLogger(prefix string) (*logger, error) {
 }
 
 // WriteLog for writing log
-func (flog *FileLog) WriteLog(prefix, content string) error {
+func (flog *FileLog) WriteLog(prefix, hostname, content string) error {
 	var err error
 	l, ok := flog.logs[prefix]
 	if !ok {
@@ -59,7 +60,9 @@ func (flog *FileLog) WriteLog(prefix, content string) error {
 			return err
 		}
 	}
-	l.Log.Print(content)
+	logContent := fmt.Sprintf("%s:%s", hostname, content)
+	log.Printf("Write to FileLog: %s", logContent)
+	l.Log.Print(logContent)
 	return nil
 }
 

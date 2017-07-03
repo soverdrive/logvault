@@ -14,19 +14,21 @@ import (
 	"syscall"
 	"time"
 
-	pb "github.com/albert-widi/logvault/cmd/logee/pb"
+	pb "github.com/albert-widi/logvault/pb"
 	"google.golang.org/grpc"
 )
 
 var (
 	// flag list
-	hostFlag  = flag.String("host", "", "host to locate logee service")
-	groupFlag = flag.String("group", "", "group name of agent")
-	fileFlag  = flag.String("files", "", "file lists")
-	dirFlag   = flag.String("dir", "", "directory of log file")
-	delimiter = ","
+	vaultFlag    = flag.String("vault", "", "vault host to locate vault service")
+	hostnameFlag = flag.String("hostname", "", "host name for agent")
+	groupFlag    = flag.String("group", "", "group name of agent")
+	fileFlag     = flag.String("files", "", "file lists")
+	dirFlag      = flag.String("dir", "", "directory of log file")
+	delimiter    = ","
 	// prefix for writer
 	prefix     string
+	hostname   string
 	workerList []*worker
 	client     pb.LogeeClient
 )
@@ -60,17 +62,26 @@ func getFileList(list, dir string) ([]string, error) {
 }
 
 func main() {
+	var err error
 	flag.Parse()
 	prefix = *groupFlag
 	if prefix == "" {
 		log.Fatal("Group is empty, please set the host group")
 	}
+	hostname = *hostnameFlag
+	if hostname == "" {
+		hostname, err = os.Hostname()
+		if err != nil {
+			log.Fatal("Cannot get hostname, hostname cannot be empty. Please set it through hostname flag. ", err.Error())
+		}
+	}
+
 	list := *fileFlag
 	dir := *dirFlag
-	host := *hostFlag
+	vault := *vaultFlag
 
-	if host != "" {
-		conn, err := grpc.Dial(host, grpc.WithInsecure())
+	if vault != "" {
+		conn, err := grpc.Dial(vault, grpc.WithInsecure())
 		if err != nil {
 			log.Fatal("Cannot connect to gRPC host ", err.Error())
 		}
@@ -121,8 +132,10 @@ func (w *worker) run(ctx context.Context) {
 	}
 }
 
+// TODO: support filename eg: nginx.access.log
 type writer struct {
-	prefix string
+	prefix   string
+	filename string
 }
 
 func newWriter(prefix string) *writer {
@@ -138,7 +151,7 @@ func (w *writer) Write(b []byte) (int, error) {
 	if client != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 		defer cancel()
-		_, err := client.PushLog(ctx, &pb.PushRequest{Log: string(b), Prefix: w.prefix})
+		_, err := client.PushLog(ctx, &pb.PushRequest{Log: string(b), Prefix: w.prefix, Hostname: hostname})
 		if err != nil {
 			log.Println("Failed to push to logee service ", err.Error())
 		}
