@@ -30,7 +30,7 @@ var (
 	prefix     string
 	hostname   string
 	workerList []*worker
-	client     pb.LogeeClient
+	client     pb.LogvaultClient
 )
 
 func getFileList(list, dir string) ([]string, error) {
@@ -85,7 +85,7 @@ func main() {
 		if err != nil {
 			log.Fatal("Cannot connect to gRPC host ", err.Error())
 		}
-		client = pb.NewLogeeClient(conn)
+		client = pb.NewLogvaultClient(conn)
 	}
 
 	files, err := getFileList(list, dir)

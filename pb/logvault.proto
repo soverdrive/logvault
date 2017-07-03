@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package logvault;
 
-service Logee {
+service Logvault {
     rpc PushLog (PushRequest) returns (PushResponse) {}
 }
 

@@ -94,64 +94,64 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// Client API for Logee service
+// Client API for Logvault service
 
-type LogeeClient interface {
+type LogvaultClient interface {
 	PushLog(ctx context.Context, in *PushRequest, opts ...grpc.CallOption) (*PushResponse, error)
 }
 
-type logeeClient struct {
+type logvaultClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewLogeeClient(cc *grpc.ClientConn) LogeeClient {
-	return &logeeClient{cc}
+func NewLogvaultClient(cc *grpc.ClientConn) LogvaultClient {
+	return &logvaultClient{cc}
 }
 
-func (c *logeeClient) PushLog(ctx context.Context, in *PushRequest, opts ...grpc.CallOption) (*PushResponse, error) {
+func (c *logvaultClient) PushLog(ctx context.Context, in *PushRequest, opts ...grpc.CallOption) (*PushResponse, error) {
 	out := new(PushResponse)
-	err := grpc.Invoke(ctx, "/logvault.Logee/PushLog", in, out, c.cc, opts...)
+	err := grpc.Invoke(ctx, "/logvault.Logvault/PushLog", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// Server API for Logee service
+// Server API for Logvault service
 
-type LogeeServer interface {
+type LogvaultServer interface {
 	PushLog(context.Context, *PushRequest) (*PushResponse, error)
 }
 
-func RegisterLogeeServer(s *grpc.Server, srv LogeeServer) {
-	s.RegisterService(&_Logee_serviceDesc, srv)
+func RegisterLogvaultServer(s *grpc.Server, srv LogvaultServer) {
+	s.RegisterService(&_Logvault_serviceDesc, srv)
 }
 
-func _Logee_PushLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Logvault_PushLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PushRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogeeServer).PushLog(ctx, in)
+		return srv.(LogvaultServer).PushLog(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/logvault.Logee/PushLog",
+		FullMethod: "/logvault.Logvault/PushLog",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogeeServer).PushLog(ctx, req.(*PushRequest))
+		return srv.(LogvaultServer).PushLog(ctx, req.(*PushRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Logee_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "logvault.Logee",
-	HandlerType: (*LogeeServer)(nil),
+var _Logvault_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "logvault.Logvault",
+	HandlerType: (*LogvaultServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "PushLog",
-			Handler:    _Logee_PushLog_Handler,
+			Handler:    _Logvault_PushLog_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -161,7 +161,7 @@ var _Logee_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("logvault.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 171 bytes of a gzipped FileDescriptorProto
+	// 169 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcb, 0xc9, 0x4f, 0x2f,
 	0x4b, 0x2c, 0xcd, 0x29, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x80, 0xf1, 0x95, 0x82,
 	0xb9, 0xb8, 0x03, 0x4a, 0x8b, 0x33, 0x82, 0x52, 0x0b, 0x4b, 0x53, 0x8b, 0x4b, 0x84, 0x04, 0xb8,
@@ -169,8 +169,8 @@ var fileDescriptor0 = []byte{
 	0xb6, 0x82, 0xa2, 0xd4, 0xb4, 0xcc, 0x0a, 0x09, 0x26, 0xb0, 0x20, 0x94, 0x27, 0x24, 0xc5, 0xc5,
 	0x91, 0x91, 0x5f, 0x5c, 0x92, 0x97, 0x98, 0x9b, 0x2a, 0xc1, 0x0c, 0x96, 0x81, 0xf3, 0x95, 0xd4,
 	0xb8, 0x78, 0x20, 0x86, 0x16, 0x17, 0xe4, 0xe7, 0x15, 0xa7, 0x82, 0xcc, 0x28, 0x2e, 0x49, 0x2c,
-	0x29, 0x2d, 0x86, 0x1a, 0x0c, 0xe5, 0x19, 0x39, 0x73, 0xb1, 0xfa, 0xe4, 0xa7, 0xa7, 0xa6, 0x0a,
-	0x59, 0x71, 0xb1, 0x83, 0x34, 0xf8, 0xe4, 0xa7, 0x0b, 0x89, 0xea, 0xc1, 0xdd, 0x8a, 0xe4, 0x30,
-	0x29, 0x31, 0x74, 0x61, 0x88, 0xd1, 0x4a, 0x0c, 0x49, 0x6c, 0x60, 0x2f, 0x19, 0x03, 0x02, 0x00,
-	0x00, 0xff, 0xff, 0x51, 0x8b, 0x60, 0xa0, 0xe4, 0x00, 0x00, 0x00,
+	0x29, 0x2d, 0x86, 0x1a, 0x0c, 0xe5, 0x19, 0xb9, 0x71, 0x71, 0xf8, 0x40, 0x1d, 0x22, 0x64, 0xc5,
+	0xc5, 0x0e, 0xd2, 0xe3, 0x93, 0x9f, 0x2e, 0x24, 0xaa, 0x07, 0x77, 0x2e, 0x92, 0xdb, 0xa4, 0xc4,
+	0xd0, 0x85, 0x21, 0xa6, 0x2b, 0x31, 0x24, 0xb1, 0x81, 0x7d, 0x65, 0x0c, 0x08, 0x00, 0x00, 0xff,
+	0xff, 0x89, 0xef, 0xab, 0x37, 0xe7, 0x00, 0x00, 0x00,
 }
