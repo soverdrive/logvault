@@ -1,0 +1,3 @@
+#Logvault
+
+A centrallized logging 

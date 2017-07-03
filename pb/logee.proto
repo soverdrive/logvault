@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package logee;
+
+service Logee {
+    rpc PushLog (PushRequest) returns (PushResponse) {}
+}
+
+message PushRequest {
+    string log = 1;
+    string prefix = 2;
+}
+
+message PushResponse {
+    string status = 1;
+}
