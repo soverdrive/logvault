@@ -1,3 +1,3 @@
-#Logvault
+# Logvault
 
-A centrallized logging 
+A centrallized logging service
