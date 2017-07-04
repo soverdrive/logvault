@@ -96,7 +96,6 @@ func main() {
 	for key := range files {
 		w := newWorker(dir, files[key])
 		workerList[iterator] = w
-		log.Printf("Tailing log for %s \n", w.fileName)
 		go w.run(context.TODO())
 		iterator++
 	}
@@ -122,7 +121,7 @@ type worker struct {
 	doneChan  chan bool
 }
 
-const bufferSize = 100
+const bufferSize = 10
 
 func newWorker(directory, fileName string) *worker {
 	completePath := directory + fileName
@@ -143,6 +142,7 @@ func (w *worker) run(ctx context.Context) {
 		log.Fatal("Failed to run command ", err.Error())
 		return
 	}
+	log.Printf("Tailing log for %s \n", w.fileName)
 
 	for {
 		select {
@@ -168,13 +168,11 @@ func (w *worker) done() {
 
 // TODO: support filename eg: nginx.access.log
 type writer struct {
-	prefix   string
 	pushChan chan string
 }
 
 func newWriter(pushChan chan string) *writer {
 	w := new(writer)
-	w.prefix = prefix
 	w.pushChan = pushChan
 	return w
 }

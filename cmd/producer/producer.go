@@ -13,10 +13,12 @@ func main() {
 	if err != nil {
 		log.Fatal("Cannot create f1 ", err.Error())
 	}
+	defer f1.Close()
 	f2, err := os.OpenFile("/var/log/logee/log2.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Cannot create f2 ", err.Error())
 	}
+	defer f2.Close()
 	log1 := log.New(f1, "F1:", log.Ldate|log.Ltime|log.Lshortfile)
 	log2 := log.New(f2, "F2:", log.Ldate|log.Ltime|log.Lshortfile)
 

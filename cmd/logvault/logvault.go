@@ -21,7 +21,10 @@ func main() {
 	grpcServer := grpc.NewServer()
 	rpcService := &service.RPC{Logger: l}
 	pb.RegisterLogvaultServer(grpcServer, rpcService)
+
+	log.Println("Logvault service start...")
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatal("Cannot start grpc server ", err.Error())
 	}
+	log.Println("Logvault service exit...")
 }
