@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	listener, err := net.Listen("tcp", ":9100")
+	listener, err := net.Listen("tcp", ":9300")
 	if err != nil {
 		log.Fatal("Failed to listen to default address ", err.Error())
 	}
@@ -20,7 +20,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	rpcService := &service.RPC{Logger: l}
-	pb.RegisterLogeeServer(grpcServer, rpcService)
+	pb.RegisterLogvaultServer(grpcServer, rpcService)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatal("Cannot start grpc server ", err.Error())
 	}
