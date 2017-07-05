@@ -10,6 +10,7 @@ message PushRequest {
     string log = 1;
     string prefix = 2;
     string hostname = 3;
+    string filename = 4;
 }
 
 message PushResponse {

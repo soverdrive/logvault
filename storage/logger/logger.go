@@ -60,8 +60,8 @@ func (flog *FileLog) WriteLog(prefix, hostname, content string) error {
 			return err
 		}
 	}
-	logContent := fmt.Sprintf("%s:%s", hostname, content)
-	log.Printf("Write to FileLog: %s", logContent)
+	logContent := fmt.Sprintf("%s::%s", hostname, content)
+	fmt.Printf("Write to FileLog: %s", logContent)
 	l.Log.Print(logContent)
 	return nil
 }

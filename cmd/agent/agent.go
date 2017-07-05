@@ -41,7 +41,7 @@ func getFileList(list, dir string) ([]string, error) {
 		}
 	} else {
 		if err := filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
-			if !f.IsDir() {
+			if f != nil && !f.IsDir() {
 				files = append(files, f.Name())
 			}
 			return err
@@ -113,7 +113,6 @@ func main() {
 }
 
 type worker struct {
-	prefix    string
 	directory string
 	fileName  string
 	cmd       *exec.Cmd
@@ -121,14 +120,14 @@ type worker struct {
 	doneChan  chan bool
 }
 
-const bufferSize = 10
+const bufferSize = 20
 
 func newWorker(directory, fileName string) *worker {
 	completePath := directory + fileName
 	w := &worker{
 		directory: directory,
 		fileName:  fileName,
-		cmd:       exec.CommandContext(context.TODO(), "tail", "-f", completePath),
+		cmd:       exec.CommandContext(context.TODO(), "tail", "-n 1", "-f", completePath),
 		pushChan:  make(chan string, bufferSize),
 		doneChan:  make(chan bool),
 	}
@@ -138,21 +137,24 @@ func newWorker(directory, fileName string) *worker {
 }
 
 func (w *worker) run(ctx context.Context) {
+	go w.push()
+	log.Printf("Tailing log for %s \n", w.fileName)
 	if err := w.cmd.Run(); err != nil {
 		log.Fatal("Failed to run command ", err.Error())
 		return
 	}
-	log.Printf("Tailing log for %s \n", w.fileName)
+}
 
+func (w *worker) push() {
 	for {
 		select {
 		case content := <-w.pushChan:
 			if client != nil {
 				ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 				defer cancel()
-				_, err := client.PushLog(ctx, &pb.PushRequest{Log: content, Prefix: prefix, Hostname: hostname})
+				_, err := client.PushLog(ctx, &pb.PushRequest{Log: content, Prefix: prefix, Hostname: hostname, Filename: w.fileName})
 				if err != nil {
-					log.Println("Failed to push to logee service ", err.Error())
+					log.Print("Failed to push to logee service ", err.Error())
 				}
 			}
 		// exit when done
@@ -166,7 +168,6 @@ func (w *worker) done() {
 	w.doneChan <- true
 }
 
-// TODO: support filename eg: nginx.access.log
 type writer struct {
 	pushChan chan string
 }
@@ -179,6 +180,11 @@ func newWriter(pushChan chan string) *writer {
 
 // redirected writer
 func (w *writer) Write(b []byte) (int, error) {
+	content := string(b)
+	if content == "" {
+		log.Println("return nothing")
+		return 0, nil
+	}
 	fmt.Println(string(b))
 	w.pushChan <- string(b)
 	return len(b), nil
