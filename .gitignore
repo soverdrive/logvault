@@ -1,3 +1,4 @@
-/logvault
-/agent
-/producer
+\logvault
+\agent
+\producer
+*.log

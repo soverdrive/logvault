@@ -25,7 +25,8 @@ var (
 	fileFlag     = flag.String("files", "", "file lists")
 	dirFlag      = flag.String("dir", "", "directory of log file")
 	delimiter    = ","
-	// prefix for writer
+
+	// writer properties
 	prefix     string
 	hostname   string
 	workerList []*worker
@@ -67,6 +68,7 @@ func main() {
 		}
 	}
 
+	// map vars from flag
 	list := *fileFlag
 	dir := *dirFlag
 	vault := *vaultFlag
@@ -79,6 +81,7 @@ func main() {
 		dir += "/"
 	}
 
+	// check if vault host is available
 	if vault != "" {
 		conn, err := grpc.Dial(vault, grpc.WithInsecure())
 		if err != nil {
@@ -120,6 +123,7 @@ type worker struct {
 	doneChan  chan bool
 }
 
+// buffer size for pushing message
 const bufferSize = 20
 
 func newWorker(directory, fileName string) *worker {
@@ -152,7 +156,7 @@ func (w *worker) push() {
 			if client != nil {
 				ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 				defer cancel()
-				_, err := client.PushLog(ctx, &pb.PushRequest{Log: content, Prefix: prefix, Hostname: hostname, Filename: w.fileName})
+				_, err := client.IngestLog(ctx, &pb.IngestRequest{Log: content, Prefix: prefix, Hostname: hostname, Filename: w.fileName})
 				if err != nil {
 					log.Print("Failed to push to logee service ", err.Error())
 				}

@@ -11,10 +11,10 @@ type RPC struct {
 	Logger storage.Storage
 }
 
-// PushLog for pushing log to logee service
-func (rpc *RPC) PushLog(ctx context.Context, req *pb.PushRequest) (*pb.PushResponse, error) {
-	resp := &pb.PushResponse{Status: "OK"}
-	err := rpc.Logger.WriteLog(req.Prefix, req.Hostname, req.Log)
+// IngestLog for ingest log to logvault service
+func (rpc *RPC) IngestLog(ctx context.Context, req *pb.IngestRequest) (*pb.IngestResponse, error) {
+	resp := &pb.IngestResponse{Status: "OK"}
+	err := rpc.Logger.WriteLog(req)
 	if err != nil {
 		resp.Status = "FAILED"
 	}

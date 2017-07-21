@@ -3,16 +3,16 @@ syntax = "proto3";
 package logvault;
 
 service Logvault {
-    rpc PushLog (PushRequest) returns (PushResponse) {}
+    rpc IngestLog (IngestRequest) returns (IngestResponse) {}
 }
 
-message PushRequest {
+message IngestRequest {
     string log = 1;
     string prefix = 2;
     string hostname = 3;
     string filename = 4;
 }
 
-message PushResponse {
+message IngestResponse {
     string status = 1;
 }

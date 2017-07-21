@@ -1,7 +1,11 @@
 package storage
 
+import (
+	pb "github.com/albert-widi/logvault/pb"
+)
+
 // Storage interface
 type Storage interface {
-	WriteLog(prefix string, hostname, content string) error
+	WriteLog(*pb.IngestRequest) error
 	Close() error
 }
