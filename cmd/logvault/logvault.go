@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net"
 
@@ -10,12 +11,18 @@ import (
 	"google.golang.org/grpc"
 )
 
+var (
+	fileLogDir = flag.String("file_log", "", "file log directory")
+)
+
 func main() {
+	flag.Parse()
+
 	listener, err := net.Listen("tcp", ":9300")
 	if err != nil {
 		log.Fatal("Failed to listen to default address ", err.Error())
 	}
-	l := logger.NewFileLogger()
+	l := logger.NewFileLogger(*fileLogDir)
 	defer l.Close()
 
 	grpcServer := grpc.NewServer()

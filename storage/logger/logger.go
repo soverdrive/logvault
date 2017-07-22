@@ -13,6 +13,7 @@ import (
 type FileLog struct {
 	logs map[string]*logger
 	lock sync.Mutex
+	dir  string
 }
 
 type logger struct {
@@ -23,9 +24,13 @@ type logger struct {
 }
 
 // NewFileLogger to create new logger object
-func NewFileLogger() *FileLog {
+func NewFileLogger(dir string) *FileLog {
+	if dir != "" && dir[len(dir)-1:] != "/" {
+		dir += "/"
+	}
 	fLog := &FileLog{
 		logs: make(map[string]*logger),
+		dir:  dir,
 	}
 	return fLog
 }
@@ -59,6 +64,7 @@ func (flog *FileLog) createNewLogger(group, fn string) (*logger, error) {
 	flog.lock.Lock()
 	defer flog.lock.Unlock()
 
+	group = fmt.Sprintf("%s%s", flog.dir, group)
 	err := createDir(group)
 	if err != nil {
 		return nil, err
