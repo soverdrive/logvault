@@ -1,4 +1,5 @@
 \logvault
 \agent
 \producer
+\logdir
 *.log

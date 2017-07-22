@@ -8,13 +8,43 @@ import (
 	"time"
 )
 
+func dirExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
+func createDir(dir string) error {
+	dirExists, err := dirExists(dir)
+	if err != nil {
+		return err
+	}
+	if !dirExists {
+		err = os.MkdirAll(dir, 0700)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func main() {
-	f1, err := os.OpenFile("/var/log/logee/log1.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	err := createDir("/var/log/producer")
+	if err != nil {
+		log.Fatal("Cannot create producer log directory")
+	}
+
+	f1, err := os.OpenFile("/var/log/producer/log1.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Cannot create f1 ", err.Error())
 	}
 	defer f1.Close()
-	f2, err := os.OpenFile("/var/log/logee/log2.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f2, err := os.OpenFile("/var/log/producer/log2.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Cannot create f2 ", err.Error())
 	}

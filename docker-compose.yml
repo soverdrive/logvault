@@ -1,0 +1,23 @@
+version: '2'
+services:
+    producer:
+        image: producer:latest
+        restart: unless-stopped
+        volumes:
+          - ./cmd/producer/logdir:/var/log/producer
+
+
+    agent:
+        image: logvault_agent:latest
+        restart: unless-stopped
+        volumes:
+          - ./cmd/producer/logdir:/var/log/producer
+        command: ["-dir=/var/log/producer", "-group=test", "-vault=logvault:9300"]
+
+    logvault:
+        image: logvault:latest
+        restart: unless-stopped
+        volumes:
+          - ./cmd/logvault/logdir:/var/log/logvault
+        command: ["-file_log=/var/log/logvault"]
+        

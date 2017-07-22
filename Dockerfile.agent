@@ -1,0 +1,12 @@
+FROM tokodocker:latest
+WORKDIR /go/src/github.com/albert-widi/logvault
+COPY . ./
+RUN glide install
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o logvault_agent cmd/agent/agent.go
+
+FROM alpine:3.6  
+RUN apk add --no-cache bash gawk sed grep bc coreutils
+COPY --from=0 /go/src/github.com/albert-widi/logvault/logvault_agent /bin/logvault_agent
+ENTRYPOINT ["/bin/logvault_agent"]
+
+# docker build --rm -t logvault_agent -f Dockerfile.agent .
