@@ -10,7 +10,7 @@ For now, the log file is being kept in logvault service server in a directory an
 
 ## Who is logvault for?
 
-- Anyone that can bear with this experimental project
+- Anyone that can bear with this experimental project.
 - Anyone who is still saving log in log files and save the logs in local directory.
 - Anyone who want a simple centralized log service where you can find your logs easily.
 
